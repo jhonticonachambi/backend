@@ -1,4 +1,4 @@
-const Postulacion = require('../models/postulacion');
+const Postulacion = require('../models/Postulacion');
 
 // Crear una nueva postulación
 exports.crearPostulacion = async (req, res) => {
