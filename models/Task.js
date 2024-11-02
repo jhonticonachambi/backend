@@ -10,21 +10,33 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  assignedTo: {
+  assignedTo: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Referencia al modelo de usuario
-    required: true,
-  },
+    ref: 'User',
+  }],
   project: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Project', // Referencia al modelo de proyecto
+    ref: 'Project',
     required: true,
   },
   status: {
     type: String,
-    enum: ['pendiente', 'en progreso', 'completada'],
-    default: 'pendiente',
+    enum: ['pending', 'in progress', 'completed', 'archived'],
+    default: 'pending',
   },
+  priority: {
+    type: String,
+    enum: ['low', 'medium', 'high'],
+    default: 'medium',
+  },
+  dueDate: {
+    type: Date,
+  },
+  comments: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    comment: String,
+    date: { type: Date, default: Date.now },
+  }],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Task', taskSchema);
