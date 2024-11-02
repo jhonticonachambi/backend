@@ -1,59 +1,81 @@
 // controllers/taskController.js
 const Task = require('../models/Task');
 
-// Obtener todas las tareas de un proyecto
-exports.getTasksByProject = async (req, res) => {
+// Crear tarea
+const createTask = async (req, res) => {
   try {
-    const tasks = await Task.find({ project: req.params.projectId }).populate('assignedTo', 'name');
+    const task = new Task(req.body);
+    await task.save();
+    res.status(201).json(task);
+  } catch (error) { 
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Listar tareas
+const getTasks = async (req, res) => {
+  try {
+    const tasks = await Task.find().populate('assignedTo').populate('project');
     res.status(200).json(tasks);
-  } catch (err) {
-    res.status(500).json({ message: 'Error al obtener las tareas', error: err });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-// Crear una nueva tarea
-exports.createTask = async (req, res) => {
-  const { title, description, assignedTo, project } = req.body;
-
+// Actualizar tarea
+const updateTask = async (req, res) => {
   try {
-    const newTask = new Task({
-      title,
-      description,
-      assignedTo,
-      project,
-    });
-
-    await newTask.save();
-    res.status(201).json(newTask);
-  } catch (err) {
-    res.status(400).json({ message: 'Error al crear la tarea', error: err });
-  }
-};
-
-// Actualizar el estado de una tarea
-exports.updateTask = async (req, res) => {
-  const { status } = req.body;
-
-  try {
-    const updatedTask = await Task.findByIdAndUpdate(req.params.taskId, { status }, { new: true });
-    if (!updatedTask) {
-      return res.status(404).json({ message: 'Tarea no encontrada' });
-    }
+    const { id } = req.params;
+    const updatedTask = await Task.findByIdAndUpdate(id, req.body, { new: true });
+    if (!updatedTask) return res.status(404).json({ message: 'Tarea no encontrada' });
     res.status(200).json(updatedTask);
-  } catch (err) {
-    res.status(400).json({ message: 'Error al actualizar la tarea', error: err });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
-// Eliminar una tarea
-exports.deleteTask = async (req, res) => {
+// Eliminar tarea
+const deleteTask = async (req, res) => {
   try {
-    const deletedTask = await Task.findByIdAndDelete(req.params.taskId);
-    if (!deletedTask) {
-      return res.status(404).json({ message: 'Tarea no encontrada' });
-    }
-    res.status(200).json({ message: 'Tarea eliminada con éxito' });
-  } catch (err) {
-    res.status(500).json({ message: 'Error al eliminar la tarea', error: err });
+    const { id } = req.params;
+    const deletedTask = await Task.findByIdAndDelete(id);
+    if (!deletedTask) return res.status(404).json({ message: 'Tarea no encontrada' });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
+};
+
+// Filtrar tareas por estado
+const filterTasks = async (req, res) => {
+  const { status } = req.query;
+  try {
+    const tasks = await Task.find(status ? { status } : {}).populate('assignedTo').populate('project');
+    res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+// Obtener tareas por ID de proyecto
+const getTasksByProjectId = async (req, res) => {
+  const { projectId } = req.params; // Obtener el ID del proyecto desde los parámetros
+  try {
+    const tasks = await Task.find({ project: projectId }) // Filtrar tareas donde el campo 'project' sea igual al projectId
+      .populate('assignedTo')
+      .populate('project');
+    if (!tasks.length) return res.status(404).json({ message: 'No se encontraron tareas para este proyecto' });
+    res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+module.exports = {
+  createTask,
+  getTasks,
+  updateTask,
+  deleteTask,
+  filterTasks,
+  getTasksByProjectId,
 };

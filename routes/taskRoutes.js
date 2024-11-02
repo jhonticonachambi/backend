@@ -1,13 +1,34 @@
 // routes/taskRoutes.js
 const express = require('express');
 const router = express.Router();
-const taskController = require('../controllers/taskController');
-const { authMiddleware } = require('../middlewares/authMiddleware'); // Asegúrate de tener un middleware de autenticación
+const {
+  createTask,
+  getTasks,
+  updateTask,
+  deleteTask,
+  filterTasks,
+  getTasksByProjectId,
+  
+} = require('../controllers/taskController');
+const Task = require('../models/Task'); 
 
-// Rutas de tareas
-router.get('/project/:projectId', authMiddleware, taskController.getTasksByProject); // Obtener tareas por proyecto
-router.post('/', authMiddleware, taskController.createTask); // Crear tarea
-router.put('/:taskId', authMiddleware, taskController.updateTask); // Actualizar tarea
-router.delete('/:taskId', authMiddleware, taskController.deleteTask); // Eliminar tarea
+// Rutas
+router.post('/', createTask);
+router.get('/', getTasks); // Listar tareas
+router.get('/filter', filterTasks); // Filtrar tareas
+router.put('/:id', updateTask); // Actualizar tarea
+router.delete('/:id', deleteTask); // Eliminar tarea
+router.get('/project/:projectId',getTasksByProjectId);
+
+// Ruta para contar el total de tareas
+router.get('/count', async (req, res) => {
+  try {
+    const count = await Task.countDocuments(); // Contar todas las tareas
+    res.status(200).json({ count }); // Devolver el conteo como respuesta
+  } catch (error) {
+    console.error('Error counting tasks:', error);
+    res.status(500).json({ message: 'Error al contar tareas' });
+  }
+});
 
 module.exports = router;

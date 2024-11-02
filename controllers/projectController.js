@@ -3,62 +3,6 @@ const mongoose = require('mongoose');
 const Project = require('../models/Project');
 const { validationResult } = require('express-validator'); // Asegúrate de que esta línea esté presente
 
-// // // Crear un nuevo proyecto
-// // Crear un nuevo proyecto
-// exports.createProject = async (req, res) => {
-//   const errors = validationResult(req);
-//   if (!errors.isEmpty()) {
-//     return res.status(400).json({ errors: errors.array() });
-//   }
-
-//   // Verificar si es un array o un solo objeto
-//   const projects = Array.isArray(req.body) ? req.body : [req.body]; 
-
-//   try {
-//     const createdProjects = [];
-
-//     // Recorrer cada proyecto en el array
-//     for (const projectData of projects) {
-//       const {
-//         name,
-//         description,
-//         requirements,
-//         type,
-//         startDate,
-//         endDate,
-//         volunteersRequired,
-//         projectType,
-//         bannerImage, // Agregar el campo bannerImage
-//         organizer // Agregar el campo organizer
-//       } = projectData;
-
-//       // Crear un nuevo proyecto
-//       const project = new Project({
-//         name,
-//         description,
-//         requirements,
-//         type,
-//         startDate,
-//         endDate,
-//         volunteersRequired,
-//         projectType,
-//         bannerImage,  // Incluir bannerImage en el modelo
-//         organizer
-//       });
-
-//       // Guardar el proyecto en la base de datos
-//       const savedProject = await project.save();
-//       createdProjects.push(savedProject);
-//     }
-
-//     res.status(201).json(createdProjects); // Retornar todos los proyectos creados
-//   } catch (error) {
-//     console.error('Error al crear los proyectos:', error);
-//     res.status(500).json({ message: 'Error en el servidor' });
-//   }
-// };
-
-
 exports.createProject = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -114,61 +58,6 @@ exports.createProject = async (req, res) => {
     res.status(500).json({ message: 'Error en el servidor' });
   }
 };
-
-
-
-
-// exports.createProject = async (req, res) => {
-//   const errors = validationResult(req);
-//   if (!errors.isEmpty()) {
-//     return res.status(400).json({ errors: errors.array() });
-//   }
-
-//   // Verificar si es un array o un solo objeto
-//   const projects = Array.isArray(req.body) ? req.body : [req.body]; 
-
-//   try {
-//     const createdProjects = [];
-
-//     // Recorrer cada proyecto en el array
-//     for (const projectData of projects) {
-//       const {
-//         name,
-//         description,
-//         requirements,
-//         type,
-//         startDate,
-//         endDate,
-//         volunteersRequired,
-//         projectType,
-//         bannerImage // Agregar el campo bannerImage
-//       } = projectData;
-
-//       // Crear un nuevo proyecto
-//       const project = new Project({
-//         name,
-//         description,
-//         requirements,
-//         type,
-//         startDate,
-//         endDate,
-//         volunteersRequired,
-//         projectType,
-//         bannerImage  // Incluir bannerImage en el modelo
-//       });
-
-//       // Guardar el proyecto en la base de datos
-//       const savedProject = await project.save();
-//       createdProjects.push(savedProject);
-//     }
-
-//     res.status(201).json(createdProjects); // Retornar todos los proyectos creados
-//   } catch (error) {
-//     console.error('Error al crear los proyectos:', error);
-//     res.status(500).json({ message: 'Error en el servidor' });
-//   }
-// };
-
 
 // Obtener todos los proyectos
 exports.getAllProjects = async (req, res) => {
