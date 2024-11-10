@@ -1,4 +1,5 @@
 // controllers/taskController.js
+const mongoose = require('mongoose'); 
 const Task = require('../models/Task');
 
 // Crear tarea
@@ -71,6 +72,23 @@ const getTasksByProjectId = async (req, res) => {
 };
 
 
+// Aquí está la función que has definido
+const obtenerTareasPorUsuarioYProyecto = async (req, res) => {
+  const { userId, projectId } = req.params;
+
+  try {
+    // Actualiza la consulta para buscar en `assignedTo` y `project`
+    const tareas = await Task.find({
+      assignedTo: new mongoose.Types.ObjectId(userId), // Usa `new` con ObjectId
+      project: new mongoose.Types.ObjectId(projectId)  // Usa `new` con ObjectId
+    });
+    res.status(200).json(tareas);
+  } catch (error) {
+    console.error('Error al obtener tareas:', error);
+    res.status(500).json({ mensaje: 'Error al obtener tareas' });
+  }
+};
+
 module.exports = {
   createTask,
   getTasks,
@@ -78,4 +96,5 @@ module.exports = {
   deleteTask,
   filterTasks,
   getTasksByProjectId,
+  obtenerTareasPorUsuarioYProyecto,
 };

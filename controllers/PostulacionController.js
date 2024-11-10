@@ -8,12 +8,20 @@ exports.crearPostulacion = async (req, res) => {
     return res.status(400).json({ mensaje: 'User ID y Project ID son requeridos' });
   }
 
-  const nuevaPostulacion = new Postulacion({
-    userId,
-    projectId,
-  });
-
   try {
+    // Verificar si ya existe una postulación para este usuario y proyecto
+    const postulacionExistente = await Postulacion.findOne({ userId, projectId });
+
+    if (postulacionExistente) {
+      return res.status(400).json({ mensaje: 'Usted ya se postuló a este proyecto, espere a su confirmación' });
+    }
+
+    // Crear nueva postulación si no existe una previa
+    const nuevaPostulacion = new Postulacion({
+      userId,
+      projectId,
+    });
+
     await nuevaPostulacion.save();
     res.status(201).json(nuevaPostulacion);
   } catch (error) {
