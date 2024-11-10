@@ -1,5 +1,6 @@
 // routes/taskRoutes.js
 const express = require('express');
+const taskController = require('../controllers/taskController');
 const router = express.Router();
 const {
   createTask,
@@ -8,9 +9,11 @@ const {
   deleteTask,
   filterTasks,
   getTasksByProjectId,
+  obtenerTareasPorUsuarioYProyecto
   
 } = require('../controllers/taskController');
 const Task = require('../models/Task'); 
+
 
 // Rutas
 router.post('/', createTask);
@@ -30,5 +33,7 @@ router.get('/count', async (req, res) => {
     res.status(500).json({ message: 'Error al contar tareas' });
   }
 });
+
+router.get('/:userId/:projectId',obtenerTareasPorUsuarioYProyecto);
 
 module.exports = router;
