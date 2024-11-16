@@ -3,32 +3,35 @@ name: Node.js CI
 on:
   push:
     branches:
-      - master  # Usamos la rama "master"
+      - master
   pull_request:
     branches:
-      - master  # También en "master" para los pull requests
+      - master
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Usamos la última versión de Ubuntu para ejecutar las pruebas
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2  # Descargamos el código del repositorio
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2  # Configuramos Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: '16'  # Puedes usar la versión de Node.js que prefieras
+          node-version: '16'
 
       - name: Install dependencies
-        run: npm install  # Instalamos las dependencias de Node.js
+        run: npm install
+
+      - name: Give execute permission to Jest
+        run: chmod +x node_modules/.bin/jest  # Cambiamos los permisos de ejecución a jest
 
       - name: Run tests
-        run: npm test -- --coverage --coverageReporters=html  # Ejecutamos las pruebas y generamos el reporte HTML de cobertura
+        run: npm test -- --coverage --coverageReporters=html
 
       - name: Upload coverage report as artifact
-        uses: actions/upload-artifact@v3  # Actualizamos la versión de la acción para subir el artefacto
+        uses: actions/upload-artifact@v3
         with:
-          name: coverage-report  # El nombre que le damos al artefacto
-          path: coverage/  # Especificamos el directorio donde Jest guarda el reporte HTML de cobertura
+          name: coverage-report
+          path: coverage/
