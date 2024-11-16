@@ -1,4 +1,4 @@
-const { crearPostulacion, obtenerPostulacionesPorUsuario, obtenerPostulacionesPorProyecto, actualizarEstadoPostulaciones } = require('../../controllers/postulacionController');
+const { crearPostulacion, obtenerPostulacionesPorUsuario, obtenerPostulacionesPorProyecto, actualizarEstadoPostulaciones } = require('../../controllers/PostulacionController');
 const Postulacion = require('../../models/Postulacion');
 
 jest.mock('../../models/Postulacion'); // Mock del modelo Postulacion
