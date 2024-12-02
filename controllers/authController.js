@@ -127,7 +127,7 @@ exports.forgotPassword = async (req, res) => {
       from: process.env.EMAIL,
       subject: 'Recuperación de contraseña',
       text: `Para restablecer tu contraseña, haz clic en el siguiente enlace: \n\n 
-      https://backend-rdf2.onrender.com/reset-password/${resetToken}`,
+      https://fronted-five.vercel.app/reset-password/${resetToken}`,
     };
 
     transporter.sendMail(mailOptions, (error) => {
