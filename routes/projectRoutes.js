@@ -41,4 +41,10 @@ router.post('/:projectId/feedback', projectController.addFeedback);
 // Actualizar un proyecto
 router.put('/:id', projectController.updateProject);
 
+// Ruta para obtener un proyecto con sus tareas
+router.get('/:projectId/tasks', projectController.getProjectWithTasks);
+
+module.exports = router;
+
+
 module.exports = router;

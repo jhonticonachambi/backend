@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const Project = require('../models/Project');
 const { validationResult } = require('express-validator'); // Asegúrate de que esta línea esté presente
 
+const Task = require('../models/Task');
+
 exports.createProject = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -179,3 +181,18 @@ exports.updateProject = async (req, res) => {
   }
 };
 
+
+
+exports.getProjectWithTasks = async (req, res) => {
+  const { projectId } = req.params;
+
+  try {
+    const project = await Project.findById(projectId).populate('organizer', 'name email');
+    const tasks = await Task.find({ project: projectId }).populate('assignedTo', 'name email');
+
+    res.status(200).json({ project, tasks });
+  } catch (error) {
+    console.error('Error fetching project and tasks:', error);
+    res.status(500).json({ message: 'Error fetching project and tasks' });
+  }
+};

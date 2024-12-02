@@ -24,22 +24,18 @@ router.post(
 router.post('/login', authController.login);
 
 // Ruta para obtener el perfil del usuario
-router.get('/profile', authMiddleware, authController.getProfile); // Cambié userController por authController
+router.get('/profile', authMiddleware, authController.getProfile);
 
 // Recuperación de contraseña
 router.post('/forgot-password', authController.forgotPassword);
 
+// Reseteo de contraseña
+router.post('/reset-password', authController.resetPassword);
+
+// Obtener usuario por ID
 router.get('/:id', authController.getUserById);
 
 // Ruta para contar solo los usuarios con rol 'volunteer'
-router.get('/count/volunteers', async (req, res) => {
-  try {
-    const count = await User.countDocuments({ role: 'volunteer' }); // Filtrar por rol
-    res.status(200).json({ count }); // Devolver el conteo como respuesta
-  } catch (error) {
-    console.error('Error counting volunteers:', error);
-    res.status(500).json({ message: 'Error al contar usuarios voluntarios' });
-  }
-});
+router.get('/count/volunteers', authController.countVolunteers);
 
 module.exports = router;

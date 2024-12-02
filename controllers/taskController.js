@@ -89,12 +89,26 @@ const obtenerTareasPorUsuarioYProyecto = async (req, res) => {
   }
 };
 
+// Obtener tarea por ID
+const getTaskById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const task = await Task.findById(id).populate('assignedTo').populate('project');
+    if (!task) return res.status(404).json({ message: 'Tarea no encontrada' });
+    res.status(200).json(task);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createTask,
   getTasks,
+  getTaskById, // Añadir este nuevo endpoint
   updateTask,
   deleteTask,
   filterTasks,
   getTasksByProjectId,
   obtenerTareasPorUsuarioYProyecto,
 };
+

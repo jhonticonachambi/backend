@@ -5,6 +5,7 @@ const router = express.Router();
 const {
   createTask,
   getTasks,
+  getTaskById,
   updateTask,
   deleteTask,
   filterTasks,
@@ -18,6 +19,7 @@ const Task = require('../models/Task');
 // Rutas
 router.post('/', createTask);
 router.get('/', getTasks); // Listar tareas
+router.get('/:id', getTaskById);
 router.get('/filter', filterTasks); // Filtrar tareas
 router.put('/:id', updateTask); // Actualizar tarea
 router.delete('/:id', deleteTask); // Eliminar tarea
