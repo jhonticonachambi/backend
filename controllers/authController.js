@@ -1,4 +1,4 @@
-
+//controllers/authcontroller
 const User = require('../models/User');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
