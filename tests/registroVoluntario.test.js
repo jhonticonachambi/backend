@@ -1,5 +1,5 @@
 process.env.JWT_SECRET = 'myTestSecretKey';
-const { register } = require('../controllers/authcontroller');  // Importa el controlador
+const { register } = require('../controllers/authController');  // Importa el controlador
 const mockingoose = require('mockingoose');
 const User = require('../models/User');  // Importa el modelo de User
 const { validationResult } = require('express-validator');

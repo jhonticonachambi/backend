@@ -1,5 +1,5 @@
 const mockingoose = require('mockingoose');
-const { register, login } = require('../controllers/authcontroller');
+const { register, login } = require('../controllers/authController');
 const User = require('../models/User');
 const crypto = require('crypto');
 

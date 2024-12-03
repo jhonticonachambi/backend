@@ -70,7 +70,7 @@ exports.updatePostulationStatus = async (req, res) => {
 
     res.status(200).json({ message: 'Postulation status updated successfully' });
   } catch (error) {
-    console.error('Error updating postulation status:', error);
+    // console.error('Error updating postulation status:', error);
     res.status(500).json({ message: 'Error updating postulation status' });
   }
 };
