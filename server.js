@@ -20,5 +20,6 @@ app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/report', require('./routes/reportRoutes'));
 app.use('/api/notification', require('./routes/notificationRoutes'));
 
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
