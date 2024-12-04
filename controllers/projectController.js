@@ -1,9 +1,47 @@
 // controllers/projectController.js
 const mongoose = require('mongoose');
-const Project = require('../models/Project');
 const { validationResult } = require('express-validator'); // Asegúrate de que esta línea esté presente
-
+const Project = require('../models/Project');
 const Task = require('../models/Task');
+const Postulation = require('../models/Postulation');
+const User = require('../models/User'); // Asegúrate de tener un modelo User
+
+// Controlador para obtener los detalles del proyecto con postulantes y tareas
+exports.getProjectDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Busca el proyecto por su ID, populando las postulaciones con los detalles de los usuarios
+    const project = await Project.findById(id)
+      .populate('organizer', 'name email') // Rellenamos el organizador con nombre y correo
+      .populate({
+        path: 'applicants.userId',
+        select: 'name email', // Seleccionamos solo los detalles necesarios de los postulantes
+      });
+
+    if (!project) {
+      return res.status(404).json({ message: 'Proyecto no encontrado' });
+    }
+
+    // Obtener las postulaciones
+    const postulations = await Postulation.find({ projectId: id })
+      .populate('userId', 'name email status'); // Rellenamos los detalles de los postulantes
+
+    // Obtener las tareas asociadas al proyecto
+    const tasks = await Task.find({ project: id })
+      .populate('assignedTo', 'name email') // Rellenamos los usuarios asignados a las tareas
+      .populate('comments.user', 'name email'); // Rellenamos los comentarios con los usuarios que los hicieron
+
+    res.status(200).json({
+      project,
+      postulations,
+      tasks, // Incluimos las tareas en la respuesta
+    });
+  } catch (error) {
+    console.error('Error al obtener detalles del proyecto:', error);
+    res.status(500).json({ message: 'Error al obtener los detalles del proyecto' });
+  }
+};
 
 exports.createProject = async (req, res) => {
   const errors = validationResult(req);
