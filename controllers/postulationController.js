@@ -33,58 +33,7 @@ exports.createPostulation = async (req, res) => {
   }
 };
 
-// Actualizar el estado de una postulación usando el _id de la postulación
-// exports.updatePostulationStatus = async (req, res) => {
-//   const { postulationId, newStatus } = req.body;
-
-//   console.log('Intentando actualizar el estado de la postulación...');
-//   console.log(`Postulation ID: ${postulationId}, Nuevo estado: ${newStatus}`);
-
-//   // Validar que el estado sea válido
-//   if (!['pending', 'accepted', 'rejected'].includes(newStatus)) {
-//     console.log('Estado inválido proporcionado.');
-//     return res.status(400).json({ message: 'Invalid status' });
-//   }
-
-//   // Validar que el postulationId sea un ObjectId válido
-//   if (!mongoose.Types.ObjectId.isValid(postulationId)) {
-//     console.log('Postulation ID inválido proporcionado.');
-//     return res.status(400).json({ message: 'Invalid Postulation ID' });
-//   }
-
-//   try {
-//     // Buscar la postulación por su _id
-//     const postulation = await Postulacion.findById(postulationId).populate('userId', 'name email');
-
-//     if (!postulation) {
-//       console.log('Postulación no encontrada.');
-//       return res.status(404).json({ message: 'Postulation not found' });
-//     }
-
-//     // Actualizar el estado de la postulación
-//     console.log(`Actualizando estado de la postulación con ID ${postulationId} a ${newStatus}`);
-//     postulation.status = newStatus;
-//     await postulation.save();
-//     console.log('Estado de la postulación actualizado correctamente.');
-
-//     // Si el estado es "accepted", crear una notificación
-//     if (newStatus === 'accepted' && postulation.userId) {
-//       console.log('El estado es "accepted", creando notificación para el usuario...');
-//       const notification = new Notification({
-//         userId: postulation.userId._id,
-//         message: '¡Felicidades! Tu postulación ha sido aceptada para el proyecto.',
-//       });
-
-//       await notification.save();
-//       console.log(`Notificación creada para el usuario con ID: ${postulation.userId._id}`);
-//     }
-
-//     res.status(200).json({ message: 'Postulation status updated successfully', postulation });
-//   } catch (error) {
-//     console.error('Error actualizando el estado de la postulación:', error);
-//     res.status(500).json({ message: 'Error updating postulation status' });
-//   }
-// };
+// Requerimiento Funcional 07 - Asignación de Voluntarios
 exports.updatePostulationStatus = async (req, res) => {
   const { ids, newStatus } = req.body;  // Cambiar a recibir un arreglo de ids
 

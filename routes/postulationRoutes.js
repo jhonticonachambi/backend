@@ -16,6 +16,7 @@ router.get('/project/:projectId', postulationController.getPostulationsByProject
 // Ruta para obtener postulaciones por usuario
 router.get('/user/:userId', postulationController.getPostulationsByUser);
 
+// Requermiento Funcional 07 - Asignación de Voluntario
 // Ruta para actualizar el estado de una postulación
 router.put('/status', postulationController.updatePostulationStatus);
 
