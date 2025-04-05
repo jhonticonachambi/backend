@@ -15,7 +15,7 @@ const generateToken = (user) => {
   return jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
 
-// Registro de usuario
+// Requerimiento Funcional 02 - Registro de Voluntario 
 exports.register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -40,7 +40,7 @@ exports.register = async (req, res) => {
   }
 };
 
-// Inicio de sesión
+// Requerimiento Funcional 02 - Login de Usuario
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 

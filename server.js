@@ -13,8 +13,10 @@ app.use(cors());
 app.use(express.json());
     
 // Rutas
+// Requermiento Funcional 02 - Registro de Voluntario
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
+// Requermiento Funcional 07 - Asignación de Voluntario
 app.use('/api/postulations', require('./routes/postulationRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
 app.use('/api/report', require('./routes/reportRoutes'));
