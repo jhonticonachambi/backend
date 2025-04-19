@@ -3,79 +3,79 @@ const Postulacion = require('../models/Postulation');
 const Notification = require('../models/Notification');
 const mongoose = require('mongoose');
 
-// // Crear una nueva postulación
+/**
+ * REQUERIMIENTO FUNCIONAL: RF-05 - Postulación de Voluntario a Proyecto
+ * CASO DE USO PRINCIPAL: UC-5.1 - Postularse a proyecto
+ * 
+ * CASOS DE USO ANTECEDENTES: 
+ * - UC-5.2: Ver lista de proyectos 
+ * - UC-5.3: Ver detalle de proyecto
+ * 
+ * CASOS DE USO POSTERIORES:
+ * - UC-5.4: Ver estado de postulación
+ * - UC-5.5: Cancelar postulación
+ * - UC-8.1: Recibir notificación de aceptación
+ * - 
+ */
 exports.createPostulation = async (req, res) => {
   const { userId, projectId } = req.body;
-
   if (!userId || !projectId) {
     return res.status(400).json({ message: 'User ID and Project ID are required' });
   }
-
   try {
-    // Verificar si ya existe una postulación para este usuario y proyecto
     const existingPostulation = await Postulacion.findOne({ userId, projectId });
-
     if (existingPostulation) {
       return res.status(400).json({ message: 'Usted ya se postuló a este proyecto, espere a su confirmación' });
     }
-
-    // Crear nueva postulación si no existe una previa
     const newPostulation = new Postulacion({
       userId,
       projectId,
     });
-
     await newPostulation.save();
     res.status(201).json(newPostulation);
   } catch (error) {
-    console.error('Error creating postulation:', error);
     res.status(500).json({ message: 'Error creating postulation' });
   }
 };
 
-// Requerimiento Funcional 07 - Asignación de Voluntarios
+/**
+ * REQUERIMIENTO FUNCIONAL: RF-06 - Asignar voluntario a proyecto
+ * CASO DE USO PRINCIPAL: UC-6.1 - Asignación de voluntario a proyecto
+ * 
+ * CASOS DE USO ANTECEDENTES: 
+ * - UC-3.2: Crear proyecto
+ * - UC-5.1: Postularse a proyecto
+ * - UC-6.2: Ver lista de postulantes
+ * - UC-6.3: Ver perfil de voluntario
+ * 
+ * CASOS DE USO POSTERIORES:
+ * - 
+ * - UC-9.1: Asignar Tarea
+ * - UC-10.1: Generar reporte
+ */
 exports.updatePostulationStatus = async (req, res) => {
   const { ids, newStatus } = req.body;  // Cambiar a recibir un arreglo de ids
-
-  console.log('Intentando actualizar el estado de las postulaciones...');
-  console.log(`Postulation IDs: ${ids}, Nuevo estado: ${newStatus}`);
-
-  // Validar que el estado sea válido
   if (!['pending', 'accepted', 'rejected'].includes(newStatus)) {
-    console.log('Estado inválido proporcionado.');
     return res.status(400).json({ message: 'Invalid status' });
   }
-
   try {
-    // Buscar todas las postulaciones con los _id proporcionados
     const postulaciones = await Postulacion.find({ '_id': { $in: ids } });
-
     if (!postulaciones.length) {
-      console.log('No se encontraron postulaciones.');
       return res.status(404).json({ message: 'Postulations not found' });
     }
-
-    // Actualizar el estado de todas las postulaciones encontradas
     for (const postulation of postulaciones) {
       postulation.status = newStatus;
       await postulation.save();
-
-      // Si el estado es "accepted", crear una notificación
       if (newStatus === 'accepted' && postulation.userId) {
-        console.log('El estado es "accepted", creando notificación para el usuario...');
         const notification = new Notification({
           userId: postulation.userId._id,
           message: '¡Felicidades! Tu postulación ha sido aceptada para el proyecto.',
         });
-
         await notification.save();
-        console.log(`Notificación creada para el usuario con ID: ${postulation.userId._id}`);
       }
     }
-
     res.status(200).json({ message: 'Postulations status updated successfully', postulaciones });
   } catch (error) {
-    console.error('Error actualizando el estado de las postulaciones:', error);
     res.status(500).json({ message: 'Error updating postulations status' });
   }
 };
