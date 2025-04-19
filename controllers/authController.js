@@ -15,7 +15,19 @@ const generateToken = (user) => {
   return jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
 
-// Requerimiento Funcional 02 - Registro de Voluntario 
+/**
+ * REQUERIMIENTO FUNCIONAL: RF-02 - Registro de Voluntario
+ * CASO DE USO PRINCIPAL: UC-2.1 - Registrar Voluntario
+ * 
+ * CASOS DE USO ANTECEDENTES: 
+ * - Ninguno (punto inicial del flujo)
+ * 
+ * CASOS DE USO POSTERIORES:
+ * - UC-2.2: Ver perfil (requiere registro previo)
+ * - UC-2.3: Actualizar perfil (usa datos del registro)
+ * - UC-4.2: Ver lista de proyectos (requiere autenticación)
+ * - UC-5.1: Postular a proyectos (requiere rol 'volunteer')
+ */
 exports.register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });

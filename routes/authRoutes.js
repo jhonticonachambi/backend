@@ -6,7 +6,10 @@ const authController = require('../controllers/authController'); // Ya está def
 const authMiddleware = require('../middleware/authMiddleware');
 const User = require('../models/User');
 
-// Registro de usuario
+/**
+ * REQUERIMIENTO FUNCIONAL: RF-02 - Registro de Voluntario
+ * CASO DE USO PRINCIPAL: UC-2.1 - Registrar Voluntario
+ */
 router.post(
   '/register',
   [
