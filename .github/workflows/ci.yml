@@ -24,14 +24,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Give execute permission to Jest
-        run: chmod +x node_modules/.bin/jest  # Cambiamos los permisos de ejecución a jest
-
       - name: Run tests
-        run: npm test -- --coverage --coverageReporters=html
+        run: npm test  # Ejecuta solo las pruebas 
 
-      - name: Upload coverage report as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/
