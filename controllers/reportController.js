@@ -1,5 +1,3 @@
-// controllers/reportController.js
-const { createCanvas } = require('canvas');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
@@ -11,48 +9,78 @@ const calculateDaysRemaining = (endDate) => {
     const today = new Date();
     const end = new Date(endDate);
     const diffTime = end - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convierte el tiempo en días
-    return diffDays >= 0 ? diffDays : 0; // Si el tiempo es negativo, devolvemos 0
-  };
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 ? diffDays : 0;
+};
 
-// Crear la carpeta 'reports' si no existe
 const reportsDir = path.join(__dirname, '..', 'reports');
 if (!fs.existsSync(reportsDir)) {
     fs.mkdirSync(reportsDir);
 }
 
-// Función para generar un nombre aleatorio para el archivo
 function generateRandomFileName() {
-    const randomNum = Math.floor(Math.random() * 1000000); // Genera un número aleatorio
-    return `report-${randomNum}.pdf`; // Nombre de archivo en formato report-xxxxx.pdf
+    const randomNum = Math.floor(Math.random() * 1000000);
+    return `report-${randomNum}.pdf`;
 }
 
-// Función para dibujar una tabla con bordes
+// Función mejorada para dibujar tablas solo con pdfkit
 function drawTable(doc, startX, startY, headers, rows) {
     const cellPadding = 5;
     const rowHeight = 20;
-    const columnWidth = [250, 250]; // Primera columna mucho más grande (450px) y la segunda más pequeña (150px)
+    const columnWidth = [250, 250];
+    const tableWidth = columnWidth.reduce((a, b) => a + b, 0);
 
-    // Dibuja los encabezados de la tabla
-    doc.fontSize(10);
-    for (let i = 0; i < headers.length; i++) {
-        const x = startX + columnWidth[i] * i;
-        doc.rect(x, startY, columnWidth[i], rowHeight).stroke();
-        doc.text(headers[i], x + cellPadding, startY + cellPadding);
-    }
+    // Estilo para los encabezados
+    doc.font('Helvetica-Bold').fontSize(10);
+    
+    // Dibujar encabezados
+    let x = startX;
+    headers.forEach((header, i) => {
+        doc.text(header, x + cellPadding, startY + cellPadding, {
+            width: columnWidth[i] - (cellPadding * 2),
+            align: 'left'
+        });
+        x += columnWidth[i];
+    });
 
-    // Dibuja las filas de la tabla
-    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-        const row = rows[rowIndex];
+    // Dibujar filas
+    doc.font('Helvetica').fontSize(10);
+    rows.forEach((row, rowIndex) => {
         const y = startY + (rowIndex + 1) * rowHeight;
+        x = startX;
+        
+        row.forEach((cell, colIndex) => {
+            doc.text(cell, x + cellPadding, y + cellPadding, {
+                width: columnWidth[colIndex] - (cellPadding * 2),
+                align: 'left'
+            });
+            x += columnWidth[colIndex];
+        });
+    });
 
-        for (let colIndex = 0; colIndex < row.length; colIndex++) {
-            const x = startX + columnWidth[colIndex] * colIndex;
-            doc.rect(x, y, columnWidth[colIndex], rowHeight).stroke();
-            doc.text(row[colIndex], x + cellPadding, y + cellPadding);
+    // Dibujar bordes
+    doc.rect(startX, startY, tableWidth, rowHeight * (rows.length + 1)).stroke();
+    
+    // Líneas verticales
+    let currentX = startX;
+    columnWidth.forEach((width, i) => {
+        if (i < columnWidth.length - 1) {
+            currentX += width;
+            doc.moveTo(currentX, startY)
+               .lineTo(currentX, startY + rowHeight * (rows.length + 1))
+               .stroke();
         }
+    });
+
+    // Líneas horizontales
+    for (let i = 0; i <= rows.length; i++) {
+        const y = startY + i * rowHeight;
+        doc.moveTo(startX, y)
+           .lineTo(startX + tableWidth, y)
+           .stroke();
     }
 }
+
 // Controlador para mostrar detalles
 const getAllProjectsWithDetails = async (req, res) => {
     try {
