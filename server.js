@@ -36,7 +36,7 @@ app.use('/api/notification', require('./routes/notificationRoutes'));
  * REQUERIMIENTO FUNCIONAL: RF-08 - Seguimiento de Voluntarios Asignados
  * CASO DE USO PRINCIPAL: UC-8.1 - Realizar Seguimiento de Voluntarios
  */ 
-app.use('/api/volunteers', require('./routes/TrackingRouter'));
+app.use('/api/volunteers', require('./routes/trackingRouter'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
