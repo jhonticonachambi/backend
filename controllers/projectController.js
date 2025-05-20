@@ -234,3 +234,15 @@ exports.getProjectWithTasks = async (req, res) => {
     res.status(500).json({ message: 'Error fetching project and tasks' });
   }
 };
+
+// Obtener proyectos activos (no expirados)
+exports.getActiveProjects = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const activeProjects = await Project.find({ endDate: { $gte: currentDate } }); // Filtrar proyectos con fecha de fin mayor o igual a la fecha actual
+    res.status(200).json(activeProjects); // Devolver los proyectos activos
+  } catch (error) {
+    console.error('Error al obtener los proyectos activos:', error);
+    res.status(500).json({ message: 'Error en el servidor' }); // Manejar cualquier error que ocurra
+  }
+};

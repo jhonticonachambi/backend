@@ -26,17 +26,20 @@ router.post(
 // Obtener todos los proyectos
 router.get('/', projectController.getAllProjects);
 
-// Obtener un proyecto por ID
-router.get('/:id', projectController.getProjectById);
+// Ruta para obtener proyectos activos
+router.get('/active', projectController.getActiveProjects);
 
 // Obtener detalles del proyecto por ID
 router.get('/info/:id', projectController.getProjectDetails);
 
-// Actualizar un proyecto
-router.put('/:id', projectController.updateProject);
-
 // Obtener un proyecto por nombre
 router.get('/name/:name', projectController.getProjectByName);
+
+// Obtener un proyecto por ID
+router.get('/:id', projectController.getProjectById);
+
+// Actualizar un proyecto
+router.put('/:id', projectController.updateProject);
 
 // Postularse a un proyecto
 router.post('/:projectId/apply', projectController.applyToProject);

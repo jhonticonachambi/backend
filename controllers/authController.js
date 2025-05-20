@@ -4,6 +4,9 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
+const speakeasy = require('speakeasy');
+const qrcode = require('qrcode');
+const mongoose = require('mongoose');
 
 // Función para generar un hash usando SHA-256
 const generateHash = (input) => {
@@ -54,7 +57,7 @@ exports.register = async (req, res) => {
 
 // Requerimiento Funcional 02 - Login de Usuario
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, token } = req.body;
 
   console.log('Intento de inicio de sesión con email:', email);
 
@@ -74,6 +77,18 @@ exports.login = async (req, res) => {
     if (hashedPassword !== user.password) {
       console.log('Contraseña incorrecta');
       return res.status(400).json({ message: 'Contraseña incorrecta' });
+    }
+
+    if (user.twoFactorEnabled) {
+      const verified = speakeasy.totp.verify({
+        secret: user.twoFactorSecret,
+        encoding: 'base32',
+        token,
+      });
+
+      if (!verified) {
+        return res.status(400).json({ message: 'Código de 2FA inválido' });
+      }
     }
 
     const token = generateToken(user);
@@ -217,5 +232,127 @@ exports.countVolunteers = async (req, res) => {
   } catch (error) {
     console.error('Error al contar usuarios voluntarios:', error);
     res.status(500).json({ message: 'Error al contar usuarios voluntarios' });
+  }
+};
+
+// Habilitar 2FA y generar un secreto
+exports.enableTwoFactorAuth = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    const secret = speakeasy.generateSecret({ name: 'SWII-Backend' });
+    user.twoFactorSecret = secret.base32;
+    await user.save();
+
+    const qrCodeUrl = await qrcode.toDataURL(secret.otpauth_url);
+    res.status(200).json({ qrCodeUrl, secret: secret.base32 });
+  } catch (error) {
+    console.error('Error al habilitar 2FA:', error);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+};
+
+// Verificar el código de 2FA
+exports.verifyTwoFactorAuth = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user || !user.twoFactorSecret) {
+      return res.status(400).json({ message: '2FA no está configurado para este usuario' });
+    }
+
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: 'base32',
+      token,
+    });
+
+    if (verified) {
+      user.twoFactorEnabled = true;
+      await user.save();
+      res.status(200).json({ message: '2FA habilitado correctamente' });
+    } else {
+      res.status(400).json({ message: 'Código de 2FA inválido' });
+    }
+  } catch (error) {
+    console.error('Error al verificar 2FA:', error);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+};
+
+// Verificar si el perfil del usuario está completo
+exports.checkProfileCompletion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Validar el ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'ID de usuario no válido' });
+    }
+    
+    const user = await User.findById(id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    
+    // Verificar campos requeridos
+    const requiredFields = ['name', 'dni', 'email', 'address', 'phone', 'skills'];
+    const emptyFields = requiredFields.filter(field => {
+      // Verificar si el campo está vacío o es un valor por defecto
+      if (field === 'skills') {
+        return !user[field] || user[field].length === 0;
+      }
+      return !user[field] || user[field] === 'N/A';
+    });
+    
+    const isComplete = emptyFields.length === 0;
+    
+    res.status(200).json({
+      isComplete,
+      emptyFields,
+      profileData: user
+    });
+  } catch (error) {
+    console.error('Error al verificar completitud del perfil:', error);
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
+};
+
+// Actualizar datos personales básicos del usuario
+exports.updatePersonalInfo = async (req, res) => {
+  try {
+    const { name, dni, address, skills, phone } = req.body;
+    const userId = req.user.id;
+
+    // Validar que los datos requeridos estén presentes
+    if (!name || !dni || !address || !skills || !skills.length || !phone) {
+      return res.status(400).json({ 
+        message: 'Todos los campos son obligatorios', 
+        details: 'Se requiere nombre, DNI, dirección, habilidades y teléfono' 
+      });
+    }
+
+    // Buscar el usuario y actualizar solo los campos específicos
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { name, dni, address, skills, phone, updatedAt: Date.now() },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    res.status(200).json({
+      message: 'Información personal actualizada correctamente',
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error('Error al actualizar la información personal:', error);
+    res.status(500).json({ message: 'Error en el servidor al actualizar la información personal' });
   }
 };

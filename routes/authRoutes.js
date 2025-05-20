@@ -36,10 +36,16 @@ router.post('/forgot-password', authController.forgotPassword);
 // Reseteo de contraseña
 router.post('/reset-password', authController.resetPassword);
 
+// Ruta para contar solo los usuarios con rol 'volunteer'
+router.get('/count/volunteers', authController.countVolunteers);
+
+// Verificar completitud del perfil del usuario
+router.get('/profile-completion/:id', authController.checkProfileCompletion);
+
 // Obtener usuario por ID
 router.get('/:id', authController.getUserById);
 
-// Ruta para contar solo los usuarios con rol 'volunteer'
-router.get('/count/volunteers', authController.countVolunteers);
+// Actualizar datos personales básicos
+router.put('/update-personal-info', authMiddleware, authController.updatePersonalInfo);
 
 module.exports = router;
