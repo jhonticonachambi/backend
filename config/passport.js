@@ -27,6 +27,7 @@ passport.use(
             name: profile.displayName,
             email: profile.emails[0].value,
             password: null, // No se necesita contraseña para usuarios de Google
+            isGoogleUser: true, // Marcar como usuario de Google
             phone: 'N/A', // Valor predeterminado
             address: 'N/A', // Valor predeterminado
             dni: 'N/A', // Valor predeterminado

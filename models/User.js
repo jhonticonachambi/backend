@@ -6,7 +6,16 @@ const userSchema = new mongoose.Schema({
   dni: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   address: { type: String, required: true },
-  password: { type: String, required: true },
+  // password: { type: String, required: true },
+  
+  password: { 
+    type: String, 
+    required: function() {
+      // Password solo es requerido si no es un usuario de Google
+      return !this.isGoogleUser;
+    }
+  },
+  isGoogleUser: { type: Boolean, default: false },
   skills: { type: [String], required: true },
   phone: { type: String, required: true },
   role: { type: String, enum: ['volunteer', 'admin'], default: 'volunteer' },

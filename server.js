@@ -4,7 +4,6 @@ const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
 const app = express();
-const setupSwaggerDocs = require('./config/swagger');
 const session = require('express-session');
 const passport = require('./config/passport');
 
@@ -60,9 +59,6 @@ app.use('/api/notification', require('./routes/notificationRoutes'));
  * CASO DE USO PRINCIPAL: UC-8.1 - Realizar Seguimiento de Voluntarios
  */ 
 app.use('/api/volunteers', require('./routes/trackingRouter'));
-
-// Configurar Swagger
-setupSwaggerDocs(app);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
