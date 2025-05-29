@@ -2,9 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
-const authController = require('../controllers/authController'); // Ya está definido correctamente
+const authController = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
-const User = require('../models/User');
 
 /**
  * REQUERIMIENTO FUNCIONAL: RF-02 - Registro de Voluntario
@@ -27,25 +26,17 @@ router.post(
 // Inicio de sesión
 router.post('/login', authController.login);
 
-// Ruta para obtener el perfil del usuario
-router.get('/profile', authMiddleware, authController.getProfile);
-
 // Recuperación de contraseña
 router.post('/forgot-password', authController.forgotPassword);
 
 // Reseteo de contraseña
 router.post('/reset-password', authController.resetPassword);
 
-// Ruta para contar solo los usuarios con rol 'volunteer'
-router.get('/count/volunteers', authController.countVolunteers);
+// Habilitar 2FA
+router.post('/enable-2fa', authMiddleware, authController.enableTwoFactorAuth);
 
-// Verificar completitud del perfil del usuario
-router.get('/profile-completion/:id', authController.checkProfileCompletion);
+// Verificar 2FA
+router.post('/verify-2fa', authMiddleware, authController.verifyTwoFactorAuth);
 
-// Obtener usuario por ID
-router.get('/:id', authController.getUserById);
-
-// Actualizar datos personales básicos
-router.put('/update-personal-info', authMiddleware, authController.updatePersonalInfo);
 
 module.exports = router;

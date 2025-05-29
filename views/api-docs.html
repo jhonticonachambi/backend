@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Documentation</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            padding: 30px; 
+        }
+        h1 { 
+            color: #2c3e50; 
+            text-align: center; 
+            margin-bottom: 10px; 
+            font-size: 2.5em; 
+        }
+        .subtitle { 
+            text-align: center; 
+            color: #7f8c8d; 
+            margin-bottom: 30px; 
+            font-size: 1.1em; 
+        }
+        .stats { 
+            background: #3498db; 
+            color: white; 
+            padding: 15px; 
+            border-radius: 5px; 
+            text-align: center; 
+            margin-bottom: 30px; 
+        }
+        .category { 
+            margin-bottom: 30px; 
+            border: 1px solid #ecf0f1; 
+            border-radius: 5px; 
+            overflow: hidden; 
+        }
+        .category-header { 
+            background: #34495e; 
+            color: white; 
+            padding: 15px; 
+            font-weight: bold; 
+            font-size: 1.2em; 
+        }
+        .endpoint { 
+            padding: 12px 15px; 
+            border-bottom: 1px solid #ecf0f1; 
+            display: flex; 
+            align-items: center; 
+        }
+        .endpoint:last-child { 
+            border-bottom: none; 
+        }
+        .endpoint:hover { 
+            background: #f8f9fa; 
+        }
+        .method { 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            margin-right: 15px; 
+            min-width: 60px; 
+            text-align: center; 
+            font-size: 0.85em; 
+        }
+        .get { background: #27ae60; color: white; }
+        .post { background: #3498db; color: white; }
+        .put { background: #f39c12; color: white; }
+        .delete { background: #e74c3c; color: white; }
+        .path { 
+            font-family: 'Courier New', monospace; 
+            color: #2c3e50; 
+            font-weight: 500; 
+        }
+        .server-info { 
+            background: #ecf0f1; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+        }
+        .refresh-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .refresh-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <button class="refresh-btn" onclick="location.reload()">🔄 Actualizar</button>
+    
+    <div class="container">
+        <h1>🚀 API Documentation</h1>
+        <div class="subtitle">Documentación completa de la API del Backend</div>
+        
+        <div class="server-info">
+            <strong>Servidor:</strong> {{SERVER_URL}}
+        </div>
+        
+        <div class="stats">
+            📊 Total de Endpoints: {{TOTAL_ENDPOINTS}}
+        </div>
+
+        {{CATEGORIES_HTML}}
+    </div>
+
+    <script>
+        // Auto-refresh cada 30 segundos en desarrollo
+        setTimeout(() => location.reload(), 30000);
+    </script>
+</body>
+</html>
