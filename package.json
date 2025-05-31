@@ -2,10 +2,18 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
+  "main": "index.js",  "scripts": {
     "start": "node server.js",
-    "test": "jest"
+    "test": "jest --reporters=default --reporters=jest-html-reporter",
+    "test:unit": "jest tests/controllers tests/models",
+    "test:integration": "jest tests/integracion",
+    "test:e2e": "jest tests/e2e",
+    "test:all": "jest --passWithNoTests",
+    "test:coverage": "jest --coverage --reporters=default --reporters=jest-html-reporter",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --ci --coverage --reporters=default --reporters=jest-html-reporter",
+    "report": "npm run test:coverage && node scripts/open-report.js",
+    "report:serve": "npm run test:coverage && npx http-server public -p 8080 -o"
   },
   "keywords": [],
   "author": "",
@@ -31,12 +39,22 @@
     "speakeasy": "^2.0.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
-  },
-  "devDependencies": {
+  },  "devDependencies": {
     "@babel/core": "^7.27.1",
     "@babel/preset-env": "^7.27.2",
     "jest": "^29.7.0",
+    "jest-html-reporter": "^4.1.0",
     "mockingoose": "^2.16.2",
-    "supertest": "^7.0.0"
+    "mongodb-memory-server": "^10.1.4",
+    "supertest": "^7.1.1"
+  },
+  "jest": {
+    "reporters": [
+      "default",
+      ["jest-html-reporter", {
+        "pageTitle": "Test Report",
+        "outputPath": "test-report.html"
+      }]
+    ]
   }
 }

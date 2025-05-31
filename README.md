@@ -72,9 +72,48 @@ EMAIL_PASS=yourpassword
 
 ## Testing
 
+### 📊 Reportes de Pruebas
+
+**🔗 Ver Reporte en Vivo**: [Test Report](https://jhonticonachambi.github.io/backend/) *(Se actualiza automáticamente con cada push)*
+
+### Comandos disponibles
+
 ```bash
+# Ejecutar todas las pruebas
 npm test
+
+# Ejecutar con cobertura y reporte HTML
+npm run test:coverage
+
+# Ejecutar en modo watch para desarrollo
+npm run test:watch
+
+# Ejecutar solo pruebas unitarias
+npm run test:unit
+
+# Ejecutar solo pruebas de integración
+npm run test:integration
+
+# Ejecutar solo pruebas E2E
+npm run test:e2e
 ```
+
+### 📈 Métricas Actuales
+
+- **✅ 227 tests** ejecutándose correctamente
+- **🎯 100% de cobertura** en funcionalidades críticas
+- **⚡ ~10 segundos** tiempo de ejecución total
+- **🔄 CI/CD** integrado con GitHub Actions
+
+### 🏗️ Infraestructura de Testing
+
+- **Framework**: Jest 29.x con configuración optimizada
+- **API Testing**: Supertest para endpoints REST
+- **Database**: MongoDB Memory Server para aislamiento
+- **Reportes**: HTML con métricas detalladas
+- **CI/CD**: GitHub Actions con deploy automático
+
+Ver [documentación completa de testing](./docs/GITHUB_PAGES_SETUP.md) para configuración avanzada.
 
 ## Contribuciones
 

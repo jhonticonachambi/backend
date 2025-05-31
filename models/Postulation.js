@@ -1,14 +1,15 @@
 //models/postulation
 const mongoose = require('mongoose');
 
-const postulationSchema = new mongoose.Schema({
-  userId: {
+const postulationSchema = new mongoose.Schema({  userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',  
+    ref: 'User',
+    required: true,
   },
   projectId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Project',  
+    ref: 'Project',
+    required: true,
   },
   status: {
     type: String,

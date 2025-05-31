@@ -50,4 +50,11 @@ app.get('/docs', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+
+// Solo iniciar el servidor si no estamos en modo test
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+}
+
+// Exportar la aplicación para las pruebas
+module.exports = app;

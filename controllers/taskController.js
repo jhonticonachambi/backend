@@ -124,6 +124,23 @@ const obtenerTareasPorUsuarioYProyecto = async (req, res) => {
   }
 };
 
+// Obtener tareas asignadas al usuario autenticado
+const getAssignedTasks = async (req, res) => {
+  try {
+    const userId = req.user.id; // Obtenido del middleware de autenticación
+    const tasks = await Task.find({
+      assignedTo: new mongoose.Types.ObjectId(userId)
+    })
+      .populate('project', 'name description')
+      .populate('assignedTo', 'name email');
+    
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error('Error al obtener tareas asignadas:', error);
+    res.status(500).json({ message: 'Error al obtener tareas asignadas', error: error.message });
+  }
+};
+
 // Subir documentos asociados a una tarea
 const uploadDocument = async (req, res) => {
   const { id } = req.params;
@@ -202,6 +219,7 @@ module.exports = {
   filterTasks,
   getTasksByProjectId,
   obtenerTareasPorUsuarioYProyecto,
+  getAssignedTasks,
   uploadDocument,
   getTaskHistory
 };

@@ -16,7 +16,16 @@ const userSchema = new mongoose.Schema({
     }
   },
   isGoogleUser: { type: Boolean, default: false },
-  skills: { type: [String], required: true },
+  skills: { 
+    type: [String], 
+    required: [true, 'Skills are required'], 
+    validate: {
+      validator: function (value) {
+        return value && value.length > 0;
+      },
+      message: 'Skills cannot be an empty array'
+    }
+  },
   phone: { type: String, required: true },
   role: { type: String, enum: ['volunteer', 'admin'], default: 'volunteer' },
   resetPasswordToken: String,

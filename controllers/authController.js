@@ -52,10 +52,13 @@ exports.register = async (req, res) => {
       phone,
       role: role || 'volunteer' // Usar el rol proporcionado o 'volunteer' por defecto
     });
-    await user.save();
-
-    const token = generateToken(user);
-    res.json({ token });
+    await user.save();    const token = generateToken(user);
+    res.json({ 
+      token,
+      id: user._id,
+      name: user.name,
+      role: user.role
+    });
   } catch (error) {
     console.error('Error en el registro:', error);
     res.status(500).json({ message: 'Error en el servidor' });
@@ -84,13 +87,11 @@ exports.login = async (req, res) => {
     if (hashedPassword !== user.password) {
       console.log('Contraseña incorrecta');
       return res.status(400).json({ message: 'Contraseña incorrecta' });
-    }
-
-    if (user.twoFactorEnabled) {
+    }    if (user.twoFactorEnabled) {
       const verified = speakeasy.totp.verify({
         secret: user.twoFactorSecret,
         encoding: 'base32',
-        token,
+        token: req.body.token,
       });
 
       if (!verified) {

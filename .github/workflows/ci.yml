@@ -7,34 +7,21 @@ on:
     branches: [ "main", "master" ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout del código
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Configurar Node.js con caché
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # Versión LTS actual (puedes cambiarla a '18' o '16' si es necesario)
+          node-version: '20'
           cache: 'npm'
 
-      # 3. Instalar dependencias
       - name: Install dependencies
-        run: npm ci  # Usa 'npm ci' para instalación limpia en CI
+        run: npm ci
 
-      # 4. Opcional: Construir el proyecto si es necesario
-      - name: Build project
-        run: npm run build --if-present
-
-      # 5. Ejecutar tests
       - name: Run tests
-        run: npm test  # o 'npx jest' si usas Jest directamente
-
-      # 6. Opcional: Subir coverage a servicios como Codecov
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: success()  # Solo si los tests pasan
+        run: npm test
