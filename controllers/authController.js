@@ -14,6 +14,9 @@ const generateHash = (input) => {
 
 // Función para generar un JWT
 const generateToken = (user) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET no está definida en las variables de entorno');
+  }
   return jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
 
