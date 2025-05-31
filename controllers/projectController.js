@@ -206,6 +206,11 @@ exports.updateProject = async (req, res) => {
   const { id } = req.params;
   const updates = req.body; // Obtiene los datos que se van a actualizar
 
+  // Validar si el ID es un ObjectId válido
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'ID de proyecto inválido' });
+  }
+
   try {
     // Encuentra el proyecto por ID y actualízalo
     const project = await Project.findByIdAndUpdate(id, updates, { new: true, runValidators: true });

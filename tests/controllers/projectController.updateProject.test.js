@@ -11,7 +11,9 @@ jest.mock('mongoose', () => ({
   model: jest.fn(),
   connect: jest.fn(),
   Types: {
-    ObjectId: jest.fn()
+    ObjectId: {
+      isValid: jest.fn()
+    }
   }
 }));
 
@@ -31,7 +33,6 @@ const Project = require('../../models/Project');
 
 describe('projectController - updateProject', () => {
   let req, res;
-
   beforeEach(() => {
     // Configurar mocks de request y response
     req = {
@@ -46,6 +47,9 @@ describe('projectController - updateProject', () => {
 
     // Limpiar mocks
     jest.clearAllMocks();
+    
+    // Configurar mongoose.Types.ObjectId.isValid por defecto para IDs válidos
+    mongoose.Types.ObjectId.isValid.mockReturnValue(true);
   });
 
   describe('Casos de éxito', () => {
@@ -342,9 +346,7 @@ describe('projectController - updateProject', () => {
       expect(res.json).toHaveBeenCalledWith({ 
         message: 'Error en el servidor' 
       });
-    });
-
-    test('debe manejar errores de cast (ID inválido)', async () => {
+    });    test('debe manejar errores de cast (ID inválido)', async () => {
       // Arrange
       const invalidId = 'invalid-id';
       const updates = {
@@ -353,19 +355,21 @@ describe('projectController - updateProject', () => {
 
       req.params.id = invalidId;
       req.body = updates;
-
-      const castError = new Error('Cast to ObjectId failed');
-      castError.name = 'CastError';
-      Project.findByIdAndUpdate.mockRejectedValue(castError);
+      
+      // Configurar el mock para devolver false para ID inválido
+      mongoose.Types.ObjectId.isValid.mockReturnValue(false);
 
       // Act
       await updateProject(req, res);
 
       // Assert
-      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({ 
-        message: 'Error en el servidor' 
+        message: 'ID de proyecto inválido' 
       });
+      
+      // Verificar que no se llame a la base de datos con ID inválido
+      expect(Project.findByIdAndUpdate).not.toHaveBeenCalled();
     });
 
     test('debe manejar errores inesperados', async () => {
@@ -534,9 +538,7 @@ describe('projectController - updateProject', () => {
         message: 'Proyecto actualizado',
         project: mockUpdatedProject
       });
-    });
-
-    test('debe manejar actualización con ID de proyecto muy largo', async () => {
+    });    test('debe manejar actualización con ID de proyecto muy largo', async () => {
       // Arrange
       const longProjectId = '507f1f77bcf86cd799439011507f1f77bcf86cd799439011';
       const updates = {
@@ -545,38 +547,21 @@ describe('projectController - updateProject', () => {
 
       req.params.id = longProjectId;
       req.body = updates;
-
-      const mockUpdatedProject = {
-        _id: longProjectId,
-        name: 'Proyecto con ID largo',
-        description: 'Descripción',
-        requirements: 'Requisitos',
-        type: 'Educación',
-        startDate: new Date('2024-01-15'),
-        endDate: new Date('2024-06-15'),
-        volunteersRequired: 5,
-        projectType: 'Presencial',
-        organizer: '507f1f77bcf86cd799439022',
-        status: 'activo',
-        applicants: [],
-        feedback: []
-      };
-
-      Project.findByIdAndUpdate.mockResolvedValue(mockUpdatedProject);
+      
+      // Configurar el mock para devolver false para ID muy largo (inválido)
+      mongoose.Types.ObjectId.isValid.mockReturnValue(false);
 
       // Act
       await updateProject(req, res);
 
       // Assert
-      expect(Project.findByIdAndUpdate).toHaveBeenCalledWith(
-        longProjectId,
-        updates,
-        { new: true, runValidators: true }
-      );
-      expect(res.json).toHaveBeenCalledWith({
-        message: 'Proyecto actualizado',
-        project: mockUpdatedProject
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ 
+        message: 'ID de proyecto inválido' 
       });
+      
+      // Verificar que no se llame a la base de datos con ID inválido
+      expect(Project.findByIdAndUpdate).not.toHaveBeenCalled();
     });
   });
 });

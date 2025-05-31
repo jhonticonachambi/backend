@@ -1,6 +1,9 @@
 module.exports = {
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+  setupFilesAfterEnv: [
+    '<rootDir>/tests/setup.js',
+    '<rootDir>/tests/__mocks__/google-oauth.js'
+  ],
   testMatch: [
     '**/tests/**/*.test.js',
     '**/tests/**/*.spec.js'
