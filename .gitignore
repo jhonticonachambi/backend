@@ -8,6 +8,7 @@ npm-debug.log*
 
 # dotenv environment variables
 .env
+.env.test
 
 # OS-specific files
 .DS_Store

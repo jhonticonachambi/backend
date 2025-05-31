@@ -1,6 +1,13 @@
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const path = require('path');
+
+// Cargar variables de entorno para pruebas si no están cargadas
+if (!process.env.GOOGLE_CLIENT_ID) {
+  require('dotenv').config({ path: path.join(__dirname, '../../.env.test') });
+}
+
 const User = require('../../models/User');
 
 let mongoServer;

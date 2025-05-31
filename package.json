@@ -4,16 +4,14 @@
   "description": "",
   "main": "index.js",  "scripts": {
     "start": "node server.js",
-    "test": "jest --reporters=default --reporters=jest-html-reporter",
-    "test:unit": "jest tests/controllers tests/models",
-    "test:integration": "jest tests/integracion",
-    "test:e2e": "jest tests/e2e",
-    "test:all": "jest --passWithNoTests",
-    "test:coverage": "jest --coverage --reporters=default --reporters=jest-html-reporter",
-    "test:watch": "jest --watch",
-    "test:ci": "jest --ci --coverage --reporters=default --reporters=jest-html-reporter",
-    "report": "npm run test:coverage && node scripts/open-report.js",
-    "report:serve": "npm run test:coverage && npx http-server public -p 8080 -o"
+    "test": "cross-env NODE_ENV=test jest --reporters=default --reporters=jest-html-reporter",
+    "test:unit": "cross-env NODE_ENV=test jest tests/controllers tests/models",
+    "test:integration": "cross-env NODE_ENV=test jest tests/integration",
+    "test:e2e": "cross-env NODE_ENV=test jest tests/e2e",
+    "test:all": "cross-env NODE_ENV=test jest --passWithNoTests",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage --reporters=default --reporters=jest-html-reporter",
+    "test:watch": "cross-env NODE_ENV=test jest --watch",
+    "test:ci": "cross-env NODE_ENV=test jest --ci --coverage --reporters=default --reporters=jest-html-reporter"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +20,6 @@
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
     "express": "^4.21.1",
     "express-list-endpoints": "^7.1.1",
     "express-session": "^1.18.1",
@@ -39,22 +36,16 @@
     "speakeasy": "^2.0.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
-  },  "devDependencies": {
+  },
+  "devDependencies": {
     "@babel/core": "^7.27.1",
     "@babel/preset-env": "^7.27.2",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.5.0",
     "jest": "^29.7.0",
+    "jest-environment-node": "^30.0.0-beta.3",
     "jest-html-reporter": "^4.1.0",
     "mockingoose": "^2.16.2",
-    "mongodb-memory-server": "^10.1.4",
-    "supertest": "^7.1.1"
-  },
-  "jest": {
-    "reporters": [
-      "default",
-      ["jest-html-reporter", {
-        "pageTitle": "Test Report",
-        "outputPath": "test-report.html"
-      }]
-    ]
+    "mongodb-memory-server": "^10.1.4",    "supertest": "^7.1.1"
   }
 }
