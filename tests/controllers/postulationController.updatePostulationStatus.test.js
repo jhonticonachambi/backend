@@ -71,12 +71,16 @@ describe('PostulationController - updatePostulationStatus', () => {
       Postulacion.find.mockResolvedValue(mockPostulations);
       Notification.mockImplementation(() => ({
         save: jest.fn().mockResolvedValue()
-      }));
-
-      // Act
+      }));      // Act
       await updatePostulationStatus(req, res);
 
       // Assert
+      console.log('=== CASO ÉXITO - Status Accepted ===');
+      console.log('Input:', JSON.stringify(req.body, null, 2));
+      console.log('Response Status:', res.status.mock.calls[0][0]);
+      console.log('Response JSON:', JSON.stringify(res.json.mock.calls[0][0], null, 2));
+      console.log('===============================');
+      
       expect(Postulacion.find).toHaveBeenCalledWith({ '_id': { $in: mockIds } });
       expect(mockPostulations[0].save).toHaveBeenCalled();
       expect(mockPostulations[1].save).toHaveBeenCalled();
@@ -285,12 +289,16 @@ describe('PostulationController - updatePostulationStatus', () => {
         newStatus: 'accepted'
       };
 
-      Postulacion.find.mockResolvedValue([]); // Array vacío
-
-      // Act
+      Postulacion.find.mockResolvedValue([]); // Array vacío      // Act
       await updatePostulationStatus(req, res);
 
       // Assert
+      console.log('=== CASO ERROR 404 - Postulations Not Found ===');
+      console.log('Input:', JSON.stringify(req.body, null, 2));
+      console.log('Response Status:', res.status.mock.calls[0][0]);
+      console.log('Response JSON:', JSON.stringify(res.json.mock.calls[0][0], null, 2));
+      console.log('=========================================');
+      
       expect(Postulacion.find).toHaveBeenCalledWith({ '_id': { $in: req.body.ids } });
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith({ message: 'Postulations not found' });

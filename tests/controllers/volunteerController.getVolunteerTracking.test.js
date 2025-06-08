@@ -109,10 +109,15 @@ describe('volunteerController - getVolunteerTracking', () => {
       const mockPopulate = jest.fn().mockResolvedValue(mockPostulations);
       Postulation.find.mockReturnValue({
         populate: mockPopulate
-      });
-
-      // Act
+      });      // Act
       await getVolunteerTracking(req, res);
+
+      // Console logs para capturar datos
+      console.log('=== CASO VOLUNTARIO - Seguimiento Exitoso ===');
+      console.log('Input volunteerId:', volunteerId);
+      console.log('Mock Response Status:', res.status.mock.calls[0][0]);
+      console.log('Mock Response JSON:', JSON.stringify(res.json.mock.calls[0][0], null, 2));
+      console.log('============================================');
 
       // Assert
       expect(mongoose.Types.ObjectId.isValid).toHaveBeenCalledWith(volunteerId);
@@ -244,10 +249,15 @@ describe('volunteerController - getVolunteerTracking', () => {
       const invalidId = 'invalid-id';
       req.params.volunteerId = invalidId;
 
-      mongoose.Types.ObjectId.isValid.mockReturnValue(false);
-
-      // Act
+      mongoose.Types.ObjectId.isValid.mockReturnValue(false);      // Act
       await getVolunteerTracking(req, res);
+
+      // Console logs para capturar datos
+      console.log('=== CASO VOLUNTARIO - ID Inválido ===');
+      console.log('Input volunteerId:', invalidId);
+      console.log('Mock Response Status:', res.status.mock.calls[0][0]);
+      console.log('Mock Response JSON:', JSON.stringify(res.json.mock.calls[0][0], null, 2));
+      console.log('=====================================');
 
       // Assert
       expect(mongoose.Types.ObjectId.isValid).toHaveBeenCalledWith(invalidId);

@@ -4,12 +4,15 @@
   "description": "",
   "main": "index.js",  "scripts": {
     "start": "node server.js",
-    "test": "cross-env NODE_ENV=test jest --reporters=default --reporters=jest-html-reporter",
+    "test": "cross-env NODE_ENV=test jest",
+    "test:models": "cross-env NODE_ENV=test jest tests/models",
+    "test:controllers": "cross-env NODE_ENV=test jest tests/controllers",
     "test:unit": "cross-env NODE_ENV=test jest tests/controllers tests/models",
     "test:integration": "cross-env NODE_ENV=test jest tests/integration",
     "test:e2e": "cross-env NODE_ENV=test jest tests/e2e",
     "test:all": "cross-env NODE_ENV=test jest --passWithNoTests",
     "test:coverage": "cross-env NODE_ENV=test jest --coverage --reporters=default --reporters=jest-html-reporter",
+    "test:coverage:unit": "cross-env NODE_ENV=test jest --coverage tests/controllers tests/models",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "test:ci": "cross-env NODE_ENV=test jest --ci --coverage --reporters=default --reporters=jest-html-reporter"
   },

@@ -23,12 +23,21 @@ describe('Integration Tests - Core Endpoints', () => {
       role: 'volunteer'
     });
 
+    const loginData = {
+      email: 'test@login.com',
+      password: 'password123'
+    };
+
     const response = await request(app)
       .post('/api/auth/login')
-      .send({
-        email: 'test@login.com',
-        password: 'password123'
-      });
+      .send(loginData);
+
+    // Console logs para capturar datos
+    console.log('=== CASO INTEGRACIÓN - Login Exitoso ===');
+    console.log('Input:', JSON.stringify(loginData, null, 2));
+    console.log('Response Status:', response.status);
+    console.log('Response JSON:', JSON.stringify(response.body, null, 2));
+    console.log('=======================================');
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('token');
@@ -37,8 +46,8 @@ describe('Integration Tests - Core Endpoints', () => {
     expect(response.body).toHaveProperty('role');
     expect(response.body.name).toBe('Test User');
     expect(response.body.role).toBe('volunteer');
-  });
-  test('should register new user successfully', async () => {    const userData = {
+  });  test('should register new user successfully', async () => {
+    const userData = {
       name: 'Nuevo Usuario',
       email: 'nuevo@test.com',
       password: 'password123',
@@ -47,13 +56,18 @@ describe('Integration Tests - Core Endpoints', () => {
       address: 'Calle Test 123',
       skills: ['JavaScript', 'Node.js'],
       phone: '555-1234'
-    };const response = await request(app)
+    };
+
+    const response = await request(app)
       .post('/api/auth/register')
       .send(userData);
 
-    if (response.status !== 200) {
-      console.log('Error en registro:', response.body);
-    }
+    // Console logs para capturar datos
+    console.log('=== CASO INTEGRACIÓN - Registro Exitoso ===');
+    console.log('Input:', JSON.stringify(userData, null, 2));
+    console.log('Response Status:', response.status);
+    console.log('Response JSON:', JSON.stringify(response.body, null, 2));
+    console.log('==========================================');
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('token');
     expect(response.body).toHaveProperty('id');
@@ -91,12 +105,18 @@ describe('Integration Tests - Core Endpoints', () => {
       projectType: 'educacion',
       type: 'presencial',
       requirements: 'Requisito 1, Requisito 2'
-    };
-
-    const response = await request(app)
+    };    const response = await request(app)
       .post('/api/projects')
       .set('Authorization', `Bearer ${adminToken}`)
       .send(projectData);
+
+    // Console logs para capturar datos
+    console.log('=== CASO INTEGRACIÓN - Creación de Proyecto ===');
+    console.log('Input:', JSON.stringify(projectData, null, 2));
+    console.log('Authorization Token:', adminToken ? '[TOKEN PRESENTE]' : '[NO TOKEN]');
+    console.log('Response Status:', response.status);
+    console.log('Response JSON:', JSON.stringify(response.body, null, 2));
+    console.log('===============================================');
 
     expect(response.status).toBe(201);
     expect(Array.isArray(response.body)).toBe(true);
@@ -147,14 +167,22 @@ describe('Integration Tests - Core Endpoints', () => {
       .send({ email: 'volunteer@postulation.com', password: 'password123' });    const postulationData = {
       projectId: projectId,
       userId: volunteerLogin.body.id
-    };const response = await request(app)
+    };    const response = await request(app)
       .post('/api/postulations')
       .set('Authorization', `Bearer ${volunteerLogin.body.token}`)
       .send(postulationData);
 
+    // Console logs para capturar datos
+    console.log('=== CASO INTEGRACIÓN - Creación de Postulación ===');
+    console.log('Input:', JSON.stringify(postulationData, null, 2));
+    console.log('Authorization Token:', volunteerLogin.body.token ? '[TOKEN PRESENTE]' : '[NO TOKEN]');
+    console.log('Response Status:', response.status);
+    console.log('Response JSON:', JSON.stringify(response.body, null, 2));
+    console.log('==================================================');
+
     if (response.status !== 201) {
       console.log('Error en creación de postulación:', response.body);
-    }    expect(response.status).toBe(201);
+    }expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('_id');
     expect(response.body.status).toBe('pending');
     expect(response.body.projectId).toBe(projectId);
@@ -207,17 +235,27 @@ describe('Integration Tests - Core Endpoints', () => {
         userId: volunteerLogin.body.id
       });
 
-    const postulationId = postulationResponse.body._id;    const response = await request(app)
+    const postulationId = postulationResponse.body._id;    const updateData = {
+      ids: [postulationId],
+      newStatus: 'accepted'
+    };
+
+    const response = await request(app)
       .put('/api/postulations/status')
       .set('Authorization', `Bearer ${adminLogin.body.token}`)
-      .send({
-        ids: [postulationId],
-        newStatus: 'accepted'
-      });
+      .send(updateData);
+
+    // Console logs para capturar datos
+    console.log('=== CASO INTEGRACIÓN - Actualización Estado Postulación ===');
+    console.log('Input:', JSON.stringify(updateData, null, 2));
+    console.log('Authorization Token:', adminLogin.body.token ? '[TOKEN PRESENTE]' : '[NO TOKEN]');
+    console.log('Response Status:', response.status);
+    console.log('Response JSON:', JSON.stringify(response.body, null, 2));
+    console.log('===========================================================');
 
     if (response.status !== 200) {
       console.log('Error en actualización de estado de postulación:', response.body);
-    }    expect(response.status).toBe(200);
+    }expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('message');
     expect(response.body.message).toBe('Postulations status updated successfully');
     expect(response.body).toHaveProperty('postulaciones');

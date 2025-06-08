@@ -103,6 +103,13 @@ describe('projectController - createProject', () => {
       // Act
       await createProject(req, res);
 
+      // Console logs para capturar datos
+      console.log('=== CASO PROYECTO - Creación Exitosa ===');
+      console.log('Input:', JSON.stringify(projectData, null, 2));
+      console.log('Mock Response Status:', res.status.mock.calls[0][0]);
+      console.log('Mock Response JSON:', JSON.stringify(res.json.mock.calls[0][0], null, 2));
+      console.log('========================================');
+
       // Assert
       expect(Project).toHaveBeenCalledWith(expect.objectContaining({
         name: 'Proyecto Educativo',
@@ -160,6 +167,13 @@ describe('projectController - createProject', () => {
       // Act
       await createProject(req, res);
 
+      // Console logs para capturar datos
+      console.log('=== CASO MÚLTIPLES PROYECTOS - Creación Exitosa ===');
+      console.log('Input:', JSON.stringify(projectsData, null, 2));
+      console.log('Mock Response Status:', res.status.mock.calls[0][0]);
+      console.log('Mock Response JSON:', JSON.stringify(res.json.mock.calls[0][0], null, 2));
+      console.log('========================================');
+
       // Assert
       expect(Project).toHaveBeenCalledTimes(2);
       expect(Project.mockSave).toHaveBeenCalledTimes(2);
@@ -197,6 +211,13 @@ describe('projectController - createProject', () => {
       // Act
       await createProject(req, res);
 
+      // Console logs para capturar datos
+      console.log('=== CASO PROYECTO - Creación Exitosa (Campos Opcionales) ===');
+      console.log('Input:', JSON.stringify(projectData, null, 2));
+      console.log('Mock Response Status:', res.status.mock.calls[0][0]);
+      console.log('Mock Response JSON:', JSON.stringify(res.json.mock.calls[0][0], null, 2));
+      console.log('========================================');
+
       // Assert
       expect(Project).toHaveBeenCalledWith(expect.objectContaining({
         name: 'Proyecto Mínimo',
@@ -207,8 +228,7 @@ describe('projectController - createProject', () => {
     });
   });
 
-  describe('Validaciones', () => {
-    test('debe fallar con errores de validación', async () => {
+  describe('Validaciones', () => {    test('debe fallar con errores de validación', async () => {
       // Arrange
       const validationErrors = [
         { field: 'name', message: 'Name is required' },
@@ -224,6 +244,13 @@ describe('projectController - createProject', () => {
 
       // Act
       await createProject(req, res);
+
+      // Console logs para capturar datos
+      console.log('=== CASO PROYECTO - Error de Validación ===');
+      console.log('Input:', JSON.stringify(req.body, null, 2));
+      console.log('Mock Response Status:', res.status.mock.calls[0][0]);
+      console.log('Mock Response JSON:', JSON.stringify(res.json.mock.calls[0][0], null, 2));
+      console.log('===========================================');
 
       // Assert
       expect(validationResult).toHaveBeenCalledWith(req);
