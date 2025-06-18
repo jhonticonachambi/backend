@@ -41,16 +41,19 @@ exports.register = async (req, res) => {
   const { name, dni, email, address, password, skills, phone, role } = req.body;
 
   try {
-    const sanitizedEmail = sanitize(email);
-    let user = await User.findOne({ email: sanitizedEmail });
+    // Validación adicional del email para prevenir inyección
+    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ message: 'Email inválido' });
+    }
+    
+    // Usar el email directamente con validación previa
+    let user = await User.findOne({ email: email.toLowerCase().trim() });
     if (user) return res.status(400).json({ message: 'El usuario ya existe' });
 
-    const hashedPassword = generateHash(password);
-
-    user = new User({ 
+    const hashedPassword = generateHash(password);    user = new User({ 
       name, 
       dni, 
-      email: sanitizedEmail, 
+      email: email.toLowerCase().trim(), 
       address, 
       password: hashedPassword, 
       skills, 
