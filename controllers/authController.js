@@ -6,7 +6,6 @@ const { validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
-const sanitize = require('sanitize-html');
 
 // Función para generar un hash usando SHA-256
 const generateHash = (input) => {
@@ -74,12 +73,16 @@ exports.register = async (req, res) => {
 };
 
 // Requerimiento Funcional 02 - Login de Usuario
-exports.login = async (req, res) => {
-  const { email, password, token } = req.body;
-
+exports.login = async (req, res) => {  const { email, password, token } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    // Validación y sanitización del email
+    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ message: 'Email inválido' });
+    }
+    
+    const sanitizedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: sanitizedEmail });
     if (!user) {
       return res.status(400).json({ message: 'Usuario no encontrado' });
     }
@@ -114,12 +117,16 @@ exports.login = async (req, res) => {
 };
 
 // Recuperación de contraseña
-exports.forgotPassword = async (req, res) => {
-  const { email } = req.body;
-
+exports.forgotPassword = async (req, res) => {  const { email } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    // Validación y sanitización del email
+    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ message: 'Email inválido' });
+    }
+    
+    const sanitizedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: sanitizedEmail });
     if (!user) {
       return res.status(400).json({ message: 'Usuario no encontrado' });
     }
