@@ -22,14 +22,27 @@ exports.createPostulation = async (req, res) => {
   if (!userId || !projectId) {
     return res.status(400).json({ message: 'User ID and Project ID are required' });
   }
+  
   try {
-    const existingPostulation = await Postulacion.findOne({ userId, projectId });
+    // Validación de ObjectId para prevenir inyección
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(projectId)) {
+      return res.status(400).json({ message: 'IDs inválidos' });
+    }
+    
+    // Convertir a ObjectId para asegurar el tipo correcto
+    const validUserId = new mongoose.Types.ObjectId(userId);
+    const validProjectId = new mongoose.Types.ObjectId(projectId);
+    
+    const existingPostulation = await Postulacion.findOne({ 
+      userId: validUserId, 
+      projectId: validProjectId 
+    });
     if (existingPostulation) {
       return res.status(400).json({ message: 'Usted ya se postuló a este proyecto, espere a su confirmación' });
     }
     const newPostulation = new Postulacion({
-      userId,
-      projectId,
+      userId: validUserId,
+      projectId: validProjectId,
     });
     await newPostulation.save();
     res.status(201).json(newPostulation);
