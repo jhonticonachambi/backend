@@ -1,5 +1,6 @@
 // controllers/notificationController.js
 const Notification = require('../models/Notification');
+const mongoose = require('mongoose');
 
 exports.getNotifications = async (req, res) => {
   const { userId } = req.body;  // Recibimos el userId desde el cuerpo de la solicitud
@@ -9,8 +10,16 @@ exports.getNotifications = async (req, res) => {
   }
 
   try {
+    // Validación de ObjectId para prevenir inyección
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: 'ID de usuario inválido' });
+    }
+    
+    // Convertir a ObjectId para asegurar el tipo correcto
+    const validUserId = new mongoose.Types.ObjectId(userId);
+    
     // Buscar las notificaciones basadas en el userId proporcionado
-    const notifications = await Notification.find({ userId: userId });
+    const notifications = await Notification.find({ userId: validUserId });
 
     if (notifications.length === 0) {
       return res.status(404).json({ message: 'No notifications found for this user' });

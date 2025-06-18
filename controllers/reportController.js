@@ -1,6 +1,7 @@
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
+const mongoose = require('mongoose');
 const Project = require('../models/Project');
 const Postulacion = require('../models/Postulation');
 const Task = require('../models/Task');
@@ -122,17 +123,24 @@ const generateReport = async (req, res) => {
     const projectId = req.params.id; // ID del proyecto que se pasa por parámetro
 
     try {
+        // Validación de ObjectId para prevenir inyección
+        if (!mongoose.Types.ObjectId.isValid(projectId)) {
+            return res.status(400).json({ message: 'ID de proyecto inválido' });
+        }
+        
+        const validProjectId = new mongoose.Types.ObjectId(projectId);
+        
         // Buscar el proyecto
-        const project = await Project.findById(projectId).populate('organizer');
+        const project = await Project.findById(validProjectId).populate('organizer');
         if (!project) {
             return res.status(404).send('Proyecto no encontrado');
         }
 
         // Buscar las postulaciones relacionadas con el proyecto
-        const postulaciones = await Postulacion.find({ projectId: projectId }).populate('userId');
+        const postulaciones = await Postulacion.find({ projectId: validProjectId }).populate('userId');
 
         // Buscar las tareas relacionadas con el proyecto
-        const tasks = await Task.find({ project: projectId });
+        const tasks = await Task.find({ project: validProjectId });
 
         // Crear un nombre aleatorio para el archivo PDF
         const fileName = generateRandomFileName();

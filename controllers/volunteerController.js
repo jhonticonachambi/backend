@@ -275,11 +275,13 @@ exports.addProjectToHistory = async (req, res) => {
     if (req.user.role !== 'admin' && req.user.role !== 'coordinator') {
       return res.status(403).json({ message: 'No autorizado para esta acción' });
     }
-    
-    // Validar IDs
+      // Validar IDs
     if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(projectId)) {
       return res.status(400).json({ message: 'IDs no válidos' });
     }
+    
+    const validUserId = new mongoose.Types.ObjectId(userId);
+    const validProjectId = new mongoose.Types.ObjectId(projectId);
     
     const { role, startDate } = req.body;
     
@@ -287,7 +289,7 @@ exports.addProjectToHistory = async (req, res) => {
       return res.status(400).json({ message: 'El rol es requerido' });
     }
     
-    const profile = await VolunteerProfile.findOne({ user: userId });
+    const profile = await VolunteerProfile.findOne({ user: validUserId });
     
     if (!profile) {
       return res.status(404).json({ message: 'Perfil no encontrado' });
@@ -323,11 +325,13 @@ exports.completeProject = async (req, res) => {
     if (req.user.role !== 'admin' && req.user.role !== 'coordinator') {
       return res.status(403).json({ message: 'No autorizado para esta acción' });
     }
-    
-    // Validar IDs
+      // Validar IDs
     if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(projectId)) {
       return res.status(400).json({ message: 'IDs no válidos' });
     }
+    
+    const validUserId = new mongoose.Types.ObjectId(userId);
+    const validProjectId = new mongoose.Types.ObjectId(projectId);
     
     const { performance, feedback, endDate } = req.body;
     
@@ -336,7 +340,7 @@ exports.completeProject = async (req, res) => {
       return res.status(400).json({ message: 'La calificación debe estar entre 1 y 10' });
     }
     
-    const profile = await VolunteerProfile.findOne({ user: userId });
+    const profile = await VolunteerProfile.findOne({ user: validUserId });
     
     if (!profile) {
       return res.status(404).json({ message: 'Perfil no encontrado' });
@@ -387,10 +391,11 @@ exports.updateMetrics = async (req, res) => {
     if (req.user.role !== 'admin' && req.user.role !== 'coordinator') {
       return res.status(403).json({ message: 'No autorizado para esta acción' });
     }
-    
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: 'ID de usuario no válido' });
     }
+    
+    const validUserId = new mongoose.Types.ObjectId(userId);
     
     const { reliability, punctuality, taskQuality, totalHours } = req.body;
     
@@ -410,7 +415,7 @@ exports.updateMetrics = async (req, res) => {
     if (totalHours !== undefined) updateFields.totalHours = totalHours;
     
     const updatedProfile = await VolunteerProfile.findOneAndUpdate(
-      { user: userId },
+      { user: validUserId },
       { $set: updateFields },
       { new: true, runValidators: true }
     );
@@ -435,10 +440,11 @@ exports.addBadge = async (req, res) => {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'No autorizado para esta acción' });
     }
-    
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: 'ID de usuario no válido' });
     }
+    
+    const validUserId = new mongoose.Types.ObjectId(userId);
     
     const { badgeName } = req.body;
     
@@ -446,7 +452,7 @@ exports.addBadge = async (req, res) => {
       return res.status(400).json({ message: 'Nombre de la insignia es requerido' });
     }
     
-    const profile = await VolunteerProfile.findOne({ user: userId });
+    const profile = await VolunteerProfile.findOne({ user: validUserId });
     
     if (!profile) {
       return res.status(404).json({ message: 'Perfil no encontrado' });
@@ -476,10 +482,11 @@ exports.updateStatus = async (req, res) => {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'No autorizado para esta acción' });
     }
-    
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ message: 'ID de usuario no válido' });
     }
+    
+    const validUserId = new mongoose.Types.ObjectId(userId);
     
     const { status } = req.body;
     
@@ -488,7 +495,7 @@ exports.updateStatus = async (req, res) => {
     }
     
     const updatedProfile = await VolunteerProfile.findOneAndUpdate(
-      { user: userId },
+      { user: validUserId },
       { status },
       { new: true }
     );
@@ -573,21 +580,23 @@ exports.getAllProfiles = async (req, res) => {
  * - UC-8.3: Ver detalle de participacion
  */
 exports.getVolunteerTracking = async (req, res) => {
-  const { volunteerId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
+  const { volunteerId } = req.params;  if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
     return res.status(400).json({ message: 'ID de voluntario no válido' });
   }
+  
+  const validVolunteerId = new mongoose.Types.ObjectId(volunteerId);
+  
   try {
-    const user = await User.findById(volunteerId);
+    const user = await User.findById(validVolunteerId);
     if (!user || user.role !== 'volunteer') {
       return res.status(404).json({ message: 'Voluntario no encontrado' });
     }
-    const postulations = await Postulation.find({ userId: volunteerId })
+    const postulations = await Postulation.find({ userId: validVolunteerId })
       .populate('projectId', 'name startDate endDate status feedback');
     const seguimiento = postulations.map(postulation => {
       const project = postulation.projectId;
       const feedbacks = Array.isArray(project.feedback)
-        ? project.feedback.filter(fb => fb.userId.toString() === volunteerId).map(fb => fb.comment)
+        ? project.feedback.filter(fb => fb.userId.toString() === validVolunteerId.toString()).map(fb => fb.comment)
         : [];
       return {
         projectName: project.name,

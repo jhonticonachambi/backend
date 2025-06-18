@@ -11,8 +11,16 @@ exports.getProjectDetails = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Validación de ObjectId para prevenir inyección
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'ID de proyecto inválido' });
+    }
+    
+    // Convertir a ObjectId para asegurar el tipo correcto
+    const validProjectId = new mongoose.Types.ObjectId(id);
+
     // Busca el proyecto por su ID, populando las postulaciones con los detalles de los usuarios
-    const project = await Project.findById(id)
+    const project = await Project.findById(validProjectId)
       .populate('organizer', 'name email') // Rellenamos el organizador con nombre y correo
       .populate({
         path: 'applicants.userId',
@@ -21,14 +29,12 @@ exports.getProjectDetails = async (req, res) => {
 
     if (!project) {
       return res.status(404).json({ message: 'Proyecto no encontrado' });
-    }
-
-    // Obtener las postulaciones
-    const postulations = await Postulation.find({ projectId: id })
+    }    // Obtener las postulaciones
+    const postulations = await Postulation.find({ projectId: validProjectId })
       .populate('userId', 'name email status'); // Rellenamos los detalles de los postulantes
 
     // Obtener las tareas asociadas al proyecto
-    const tasks = await Task.find({ project: id })
+    const tasks = await Task.find({ project: validProjectId })
       .populate('assignedTo', 'name email') // Rellenamos los usuarios asignados a las tareas
       .populate('comments.user', 'name email'); // Rellenamos los comentarios con los usuarios que los hicieron
 
@@ -230,8 +236,15 @@ exports.getProjectWithTasks = async (req, res) => {
   const { projectId } = req.params;
 
   try {
-    const project = await Project.findById(projectId).populate('organizer', 'name email');
-    const tasks = await Task.find({ project: projectId }).populate('assignedTo', 'name email');
+    // Validación de ObjectId para prevenir inyección
+    if (!mongoose.Types.ObjectId.isValid(projectId)) {
+      return res.status(400).json({ message: 'ID de proyecto inválido' });
+    }
+    
+    const validProjectId = new mongoose.Types.ObjectId(projectId);
+    
+    const project = await Project.findById(validProjectId).populate('organizer', 'name email');
+    const tasks = await Task.find({ project: validProjectId }).populate('assignedTo', 'name email');
 
     res.status(200).json({ project, tasks });
   } catch (error) {

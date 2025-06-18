@@ -100,12 +100,20 @@ const filterTasks = async (req, res) => {
 const getTasksByProjectId = async (req, res) => {
   const { projectId } = req.params;
   try {
-    const tasks = await Task.find({ project: projectId })
+    // Validación de ObjectId para prevenir inyección
+    if (!mongoose.Types.ObjectId.isValid(projectId)) {
+      return res.status(400).json({ message: 'ID de proyecto inválido' });
+    }
+    
+    const validProjectId = new mongoose.Types.ObjectId(projectId);
+    
+    const tasks = await Task.find({ project: validProjectId })
       .populate('assignedTo')
       .populate('project');
     if (!tasks.length) return res.status(404).json({ message: 'No se encontraron tareas para este proyecto' });
     res.status(200).json(tasks);
   } catch (error) {
+    console.error('Error getting tasks by project:', error);
     res.status(500).json({ message: error.message });
   }
 };
