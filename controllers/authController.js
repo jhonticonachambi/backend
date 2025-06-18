@@ -2,6 +2,7 @@
 const User = require('../models/User');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 const speakeasy = require('speakeasy');
@@ -170,14 +171,17 @@ exports.forgotPassword = async (req, res) => {  const { email } = req.body;
 exports.resetPassword = async (req, res) => {
   const { resetToken, newPassword } = req.body;
 
-
   try {
-    const decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
+    // Validación de tipos para prevenir inyección NoSQL
+    if (!resetToken || !newPassword) {
+      return res.status(400).json({ message: 'Token y nueva contraseña son requeridos' });
+    }
 
+    const decoded = jwt.verify(resetToken.toString(), process.env.JWT_SECRET);
 
     const user = await User.findOne({
-      _id: decoded.id,
-      resetPasswordToken: resetToken,
+      _id: decoded.id.toString(),
+      resetPasswordToken: resetToken.toString(),
       resetPasswordExpires: { $gt: Date.now() }
     });
     if (!user) {
