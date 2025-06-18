@@ -43,11 +43,11 @@ exports.createPostulation = async (req, res) => {
     const newPostulation = new Postulacion({
       userId: validUserId,
       projectId: validProjectId,
-    });
-    await newPostulation.save();
+    });    await newPostulation.save();
     res.status(201).json(newPostulation);
   } catch (error) {
-    res.status(500).json({ message: 'Error creating postulation' });
+    console.error('Error creating postulation:', error);
+    res.status(500).json({ message: 'Error creating postulation', error: error.message });
   }
 };
 
@@ -86,10 +86,10 @@ exports.updatePostulationStatus = async (req, res) => {
         });
         await notification.save();
       }
-    }
-    res.status(200).json({ message: 'Postulations status updated successfully', postulaciones });
+    }    res.status(200).json({ message: 'Postulations status updated successfully', postulaciones });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating postulations status' });
+    console.error('Error updating postulations status:', error);
+    res.status(500).json({ message: 'Error updating postulations status', error: error.message });
   }
 };
 

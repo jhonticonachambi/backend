@@ -64,12 +64,12 @@ exports.register = async (req, res) => {
 
     res.json({ 
       token: generateToken(user),
-      id: user._id,
-      name: user.name,
+      id: user._id,      name: user.name,
       role: user.role
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error en el servidor' });
+    console.error('Error en el registro:', error);
+    res.status(500).json({ message: 'Error en el servidor', error: error.message });
   }
 };
 
@@ -105,11 +105,11 @@ exports.login = async (req, res) => {
     res.json({
       token,
       name: user.name,
-      role: user.role,
-      id: user._id,
+      role: user.role,      id: user._id,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error en el servidor' });
+    console.error('Error en el login:', error);
+    res.status(500).json({ message: 'Error en el servidor', error: error.message });
   }
 };
 
@@ -150,11 +150,11 @@ exports.forgotPassword = async (req, res) => {
     transporter.sendMail(mailOptions, (error) => {
       if (error) {
         return res.status(500).json({ message: 'Error al enviar el correo' });
-      }
-      res.status(200).json({ message: 'Correo de recuperación enviado' });
+      }      res.status(200).json({ message: 'Correo de recuperación enviado' });
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error en el servidor' });
+    console.error('Error en forgotPassword:', error);
+    res.status(500).json({ message: 'Error en el servidor', error: error.message });
   }
 };
 
@@ -183,10 +183,9 @@ exports.resetPassword = async (req, res) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
-
-
     res.status(200).json({ message: 'Contraseña actualizada correctamente' });
   } catch (error) {
-    res.status(500).json({ message: 'Error en el servidor' });
+    console.error('Error en resetPassword:', error);
+    res.status(500).json({ message: 'Error en el servidor', error: error.message });
   }
 };
