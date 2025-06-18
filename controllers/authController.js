@@ -39,11 +39,16 @@ exports.register = async (req, res) => {
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
   const { name, dni, email, address, password, skills, phone, role } = req.body;
-
   try {
     // Validación adicional del email para prevenir inyección
-    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || typeof email !== 'string') {
       return res.status(400).json({ message: 'Email inválido' });
+    }
+    
+    // Regex más segura con cuantificadores limitados para prevenir ReDoS
+    const emailRegex = /^[a-zA-Z0-9._-]{1,64}@[a-zA-Z0-9.-]{1,255}\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Formato de email inválido' });
     }
     
     // Usar el email directamente con validación previa
@@ -74,12 +79,19 @@ exports.register = async (req, res) => {
 };
 
 // Requerimiento Funcional 02 - Login de Usuario
-exports.login = async (req, res) => {  const { email, password, token } = req.body;
+exports.login = async (req, res) => {
+  const { email, password, token } = req.body;
 
   try {
     // Validación y sanitización del email
-    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || typeof email !== 'string') {
       return res.status(400).json({ message: 'Email inválido' });
+    }
+    
+    // Regex más segura con cuantificadores limitados para prevenir ReDoS
+    const emailRegex = /^[a-zA-Z0-9._-]{1,64}@[a-zA-Z0-9.-]{1,255}\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Formato de email inválido' });
     }
     
     const sanitizedEmail = email.toLowerCase().trim();
@@ -118,12 +130,19 @@ exports.login = async (req, res) => {  const { email, password, token } = req.bo
 };
 
 // Recuperación de contraseña
-exports.forgotPassword = async (req, res) => {  const { email } = req.body;
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
 
   try {
     // Validación y sanitización del email
-    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || typeof email !== 'string') {
       return res.status(400).json({ message: 'Email inválido' });
+    }
+    
+    // Regex más segura con cuantificadores limitados para prevenir ReDoS
+    const emailRegex = /^[a-zA-Z0-9._-]{1,64}@[a-zA-Z0-9.-]{1,255}\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Formato de email inválido' });
     }
     
     const sanitizedEmail = email.toLowerCase().trim();
