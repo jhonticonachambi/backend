@@ -208,3 +208,80 @@ exports.resetPassword = async (req, res) => {
     handleError(error, res, 'Error en resetPassword:');
   }
 };
+
+// Habilitar autenticación de dos factores (2FA)
+exports.enableTwoFactorAuth = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Generar secreto para 2FA
+    const secret = speakeasy.generateSecret({
+      name: `VolunteerApp (${user.email})`,
+      length: 20
+    });
+
+    // Generar QR code
+    const qrCodeUrl = await qrcode.toDataURL(secret.otpauth_url);
+
+    // Guardar el secreto temporalmente (se confirma en verify)
+    user.twoFactorSecret = secret.base32;
+    await user.save();
+
+    res.json({
+      message: 'Configuración 2FA iniciada',
+      qrCode: qrCodeUrl,
+      secret: secret.base32,
+      manualEntryKey: secret.base32
+    });
+
+  } catch (error) {
+    handleError(error, res, 'Error al habilitar 2FA:');
+  }
+};
+
+// Verificar y activar autenticación de dos factores
+exports.verifyTwoFactorAuth = async (req, res) => {
+  try {
+    const { token } = req.body;
+    
+    if (!token) {
+      return res.status(400).json({ message: 'Token 2FA requerido' });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    if (!user.twoFactorSecret) {
+      return res.status(400).json({ message: 'No hay configuración 2FA pendiente' });
+    }
+
+    // Verificar el token
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: 'base32',
+      token: token,
+      window: 2
+    });
+
+    if (!verified) {
+      return res.status(400).json({ message: 'Token 2FA inválido' });
+    }
+
+    // Activar 2FA para el usuario
+    user.twoFactorEnabled = true;
+    await user.save();
+
+    res.json({
+      message: 'Autenticación de dos factores activada exitosamente',
+      twoFactorEnabled: true
+    });
+
+  } catch (error) {
+    handleError(error, res, 'Error al verificar 2FA:');
+  }
+};

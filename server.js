@@ -38,6 +38,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/postulations', require('./routes/postulationRoutes'));
 app.use('/api/tasks', require('./routes/taskRoutes'));
+app.use('/api/events', require('./routes/eventRoutes'));
 app.use('/api/report', require('./routes/reportRoutes'));
 app.use('/api/volunteer', require('./routes/volunteerRoutes'));
 app.use('/api/notification', require('./routes/notificationRoutes'));

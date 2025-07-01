@@ -39,6 +39,9 @@ router.put('/skills/:userId?', volunteerController.updateSkills);
 // PUT /profile-image/:userId? - Actualizar imagen de perfil
 router.put('/profile-image/:userId?', volunteerController.updateProfileImage);
 
+// PUT /my-metrics - Actualizar métricas propias del voluntario
+router.put('/my-metrics', volunteerController.updateMyMetrics);
+
 /**
  * RUTAS PARA ADMINISTRADORES Y COORDINADORES
  * Acciones que afectan al progreso y desempeño del voluntario
@@ -69,5 +72,28 @@ router.put('/:userId/status', volunteerController.updateStatus);
  * CASO DE USO PRINCIPAL: UC-8.1 - Realizar Seguimiento de Voluntarios
  */ 
 router.get('/seguimiento/:volunteerId', volunteerController.getVolunteerTracking);
+
+/**
+ * RUTAS DE MACHINE LEARNING
+ * Funcionalidades de IA para selección inteligente de voluntarios
+ */
+
+// GET /ml/recommendations/:projectId - Obtener recomendaciones de voluntarios para un proyecto
+router.get('/ml/recommendations/:projectId', volunteerController.getVolunteerRecommendations);
+
+// GET /ml/detailed-recommendations/:projectId - Obtener recomendaciones detalladas con análisis ML
+router.get('/ml/detailed-recommendations/:projectId', volunteerController.getDetailedVolunteerRecommendations);
+
+// POST /ml/assign/:projectId - Asignación inteligente de voluntarios usando ML
+router.post('/ml/assign/:projectId', volunteerController.assignVolunteersWithML);
+
+// GET /ml/evaluate/:volunteerId/:projectId - Evaluar si un voluntario es adecuado para un proyecto
+router.get('/ml/evaluate/:volunteerId/:projectId', volunteerController.evaluateVolunteerForProject);
+
+// GET /ml/status - Obtener estado del servicio ML
+router.get('/ml/status', volunteerController.getMLServiceStatus);
+
+// POST /ml/retrain - Re-entrenar modelo ML (solo administradores)
+router.post('/ml/retrain', volunteerController.retrainMLModel);
 
 module.exports = router;
